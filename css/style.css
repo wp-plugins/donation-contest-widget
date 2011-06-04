@@ -1,0 +1,24 @@
+.admin_donationcontest_wrap table.donationcontest_useroptions {
+	width: 100%;
+	border-collapse: collapse;
+}
+.admin_donationcontest_wrap table.donationcontest_useroptions tr {
+
+}
+.admin_donationcontest_wrap table.donationcontest_useroptions td,
+.admin_donationcontest_wrap table.donationcontest_useroptions th {
+	padding: 5px 5px 5px 5px;
+	vertical-align: top;
+	border: 0px solid #C0C0C0;
+	text-align: left;
+}
+.admin_donationcontest_wrap table.donationcontest_useroptions th {
+	width: 180px;
+}
+.admin_donationcontest_wrap table.donationcontest_useroptions a{
+	color: #0080FF;
+	text-decoration: none;
+}
+.admin_donationcontest_wrap table.donationcontest_useroptions a:hover{
+	text-decoration: underline;
+}
