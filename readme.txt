@@ -20,7 +20,7 @@ Front End
 
 1. The widget can be easily inserted into any widgetized area of website like any standard WordPress widget (drag and drop).
 2. Once added users can see donation contest box. This box displays three group of donors in rotating mode. The first group is the TOP X (X is defined in WordPress admin area) donors for the last 30 days starting from now. The second group is the TOP X donors for last year starting from now. And third group displays TOP X donors for all the time.
-3. User can click "Donate" button and make donation. Once donation done, user's name will be stored in database and if donated amount is high enough his/her name appears in TOP X donors list.
+3. User can click "Donate" button and make donation. Once donation done, user's name will be stored in database and if donated amount is high enough his/her name appears in TOP X donors list. You can try it on this page: <a href="http://www.icprojects.net/donation-contest-widget.html">Donation Contest Widget</a>.
 
 Back end
 
