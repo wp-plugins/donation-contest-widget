@@ -26,7 +26,7 @@ Back end
 
 1. The plugin is installed like any other standard WordPress plugin. The only thing you have to do is to set derictory permission 0777 for folder /wp-content/plugins/donation-contest-widget/uploads/ (this folder is used to store custom donate button).
 2. Once installed, it will create a configuration page in the admin section where the admin can do required setting such as PayPal ID, "thank you" message, number of TOP X donors to be displayed, custom "donate" button, widget stylesheet etc.
-3. The plugin also adds new widget into widgets list. So you can easily drag it and drop into and widget area.
+3. The plugin also adds new widget into widgets list. So you can easily drag it and drop into any widget area.
 
 Plugin requires PHP version 5 or higher installed on your server.
 
@@ -38,7 +38,7 @@ This section describes how to install the plugin and get it working.
 
 1. Upload folder "donation-contest-widget" (and its content) into your WordPress plugin folder (normally it is /wp-content/plugins/).
 2. Set permission 0777 for folder "/wp-content/plugins/donation-contest-widget/uploads".
-3. Go to WordPress admin area and activate the plugin in plugin sections (like you do for any other plugins).
+3. Go to WordPress admin area and activate the plugin in plugins section (like you do for any other plugins).
 
 == Frequently Asked Questions ==
 
