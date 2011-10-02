@@ -22,3 +22,8 @@
 .admin_donationcontest_wrap table.donationcontest_useroptions a:hover{
 	text-decoration: underline;
 }
+
+.admin_donationcontest_wrap table.donationcontest_useroptions  em{
+	font-size: 11px;
+	color: #A0A0A0;
+}

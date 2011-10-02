@@ -7,8 +7,8 @@ Author URI: http://www.icprojects.net/
 Donate link: http://www.icprojects.net/donation-contest-widget.html
 Tags: donation, paypal
 Requires at least: 3.0
-Tested up to: 3.1.3
-Stable tag: 1.28
+Tested up to: 3.2.1
+Stable tag: 1.29
 
 Donation Contest Widget is a plugin which allows you to add donation contest box to any widgetized area of your website.
 
@@ -24,8 +24,8 @@ Front End
 
 Back end
 
-1. The plugin is installed like any other standard WordPress plugin. The only thing you have to do is to set derictory permission 0777 for folder /wp-content/plugins/donation-contest-widget/uploads/ (this folder is used to store custom donate button).
-2. Once installed, it will create a configuration page in the admin section where the admin can do required setting such as PayPal ID, "thank you" message, number of TOP X donors to be displayed, custom "donate" button, widget stylesheet etc.
+1. The plugin is installed like any other standard WordPress plugin.
+2. Once installed, it will create a configuration page in the admin section where the admin can do required setting such as PayPal ID, currency, "thank you" message, number of TOP X donors to be displayed, custom "donate" button, widget stylesheet etc.
 3. The plugin also adds new widget into widgets list. So you can easily drag it and drop into any widget area.
 
 Plugin requires PHP version 5 or higher installed on your server.
@@ -37,8 +37,7 @@ For more details please visit <a href="http://www.icprojects.net/donation-contes
 This section describes how to install the plugin and get it working.
 
 1. Upload folder "donation-contest-widget" (and its content) into your WordPress plugin folder (normally it is /wp-content/plugins/).
-2. Set permission 0777 for folder "/wp-content/plugins/donation-contest-widget/uploads".
-3. Go to WordPress admin area and activate the plugin in plugins section (like you do for any other plugins).
+2. Go to WordPress admin area and activate the plugin in plugins section (like you do for any other plugins).
 
 == Frequently Asked Questions ==
 
@@ -50,10 +49,17 @@ None.
 
 == Changelog ==
 
+= 1.29 =
+* Currency list added. Now you can use the following currencies: USD, AUD, BRL, CAD, CHF, CZK, DKK, EUR, GBP, HKD, HUF, ILS, JPY, MXN, MYR, NOK, NZD, PHP, PLN, SEK, SGD, THB, TRY, TWD. 
+* Minor bugs fixed.
+
 = 1.28 =
 This is the first version of Paid Downloads plugin.
 
 == Upgrade Notice ==
 
+= 1.29 =
+Deactivate plugin. Upload new plugin files. Activate plugin.
+ 
 = 1.28 =
 This is the first version of Paid Downloads plugin.

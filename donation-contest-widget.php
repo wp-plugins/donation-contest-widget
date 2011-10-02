@@ -3,7 +3,7 @@
 Plugin Name: Donation Contest Widget
 Plugin URI: http://www.icprojects.net/donation-contest-widget.html
 Description: This plugin allows you to insert Donation Contest Widget into any widgetized area of your website.
-Version: 1.28
+Version: 1.29
 Author: Ivan Churakov
 Author URI: http://www.freelancer.com/affiliates/ichurakov/
 */
@@ -28,7 +28,9 @@ class donationcontest_class
 	var $donate_image;
 	var $top_donors;
 	var $slide_delay;
+	var $currency;
 	var $widget_stylesheet;
+	var $currency_list = array("USD", "AUD", "BRL", "CAD", "CHF", "CZK", "DKK", "EUR", "GBP", "HKD", "HUF", "ILS", "JPY", "MXN", "MYR", "NOK", "NZD", "PHP", "PLN", "SEK", "SGD", "THB", "TRY", "TWD");
 	var $donate_buttons_list = array("html", "paypal", "custom");
 	private $default_options;
 	
@@ -45,7 +47,8 @@ class donationcontest_class
 		"donate_image",
 		"top_donors",
 		"widget_stylesheet",
-		"slide_delay"
+		"slide_delay",
+		"currency"
 		);
 		$this->default_options = array (
 			"exists" => 1,
@@ -59,7 +62,8 @@ class donationcontest_class
 			"donate_image" => "",
 			"top_donors" => "5",
 			"widget_stylesheet" => ".dontaioncontest_widgetbox {\r\nborder: 2px solid #C0C0C0 !important;\r\nbackground-color: #F8F8F8 !important;\r\ntext-align: center !important;\r\npadding: 5px 10px !important;\r\nmax-width: 300px !important;\r\nline-height: 20px;\r\nfont-size: 13px;\r\n}\r\n.dontaioncontest_widgetbox h3 {\r\nfont-weight: bold !important;\r\nfont-size: 14px !important;\r\nline-height: 17px !important;\r\nmargin: 0px 0px 5px 0px !important;\r\npadding: 0px !important;\r\nborder: 0px solid transparent !important;\r\n}\r\n.dontaioncontest_button {\r\nmargin: 5px 0px 0px 0px !important;\r\n}",
-			"slide_delay" => "10"
+			"slide_delay" => "10",
+			"currency" => "USD"
 		);
 
 		if (!empty($_COOKIE["donationcontest_error"]))
@@ -110,6 +114,33 @@ class donationcontest_class
 			require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 			dbDelta($sql);
 		}
+		if (!file_exists(ABSPATH.'wp-content/uploads/donation-contest-widget'))
+		{
+			wp_mkdir_p(ABSPATH.'wp-content/uploads/donation-contest-widget');
+		}
+		if (file_exists(ABSPATH.'wp-content/uploads/donation-contest-widget') && is_dir(ABSPATH.'wp-content/uploads/donation-contest-widget'))
+		{
+			if (!file_exists(ABSPATH.'wp-content/uploads/donation-contest-widget/index.html'))
+			{
+				file_put_contents(ABSPATH.'wp-content/uploads/donation-contest-widget/index.html', 'Silence is the gold!');
+			}
+			if (file_exists(dirname(__FILE__).'/uploads') && is_dir(dirname(__FILE__).'/uploads'))
+			{
+				$dircontent = scandir(dirname(__FILE__).'/uploads');
+				for ($i=0; $i<sizeof($dircontent); $i++)
+				{
+					if ($dircontent[$i] != "." && $dircontent[$i] != "..")
+					{
+						if (is_file(dirname(__FILE__).'/uploads/'.$dircontent[$i]))
+						{
+							if (strtolower($dircontent[$i]) == "index.html") unlink(dirname(__FILE__).'/uploads/'.$dircontent[$i]);
+							else rename(dirname(__FILE__).'/uploads/'.$dircontent[$i], ABSPATH.'wp-content/uploads/donation-contest-widget/'.$dircontent[$i]);
+						}
+					}
+				}
+				rmdir(dirname(__FILE__).'/uploads');
+			}
+		}
 	}
 
 	function get_settings() {
@@ -126,6 +157,7 @@ class donationcontest_class
 				$this->$option = get_option('donationcontest_'.$option);
 			}
 		}
+		if (empty($this->currency)) $this->currency = "USD";
 	}
 
 	function update_settings() {
@@ -153,7 +185,7 @@ class donationcontest_class
 		if (strlen($this->thankyou_email_subject) < 3) $errors[] = "\"Thank you\" e-mail subject must contain at least 3 characters";
 		else if (strlen($this->thankyou_email_subject) > 64) $errors[] = "\"Thank you\" e-mail subject must contain maximum 64 characters";
 		if (strlen($this->thankyou_email_body) < 3) $errors[] = "\"Thank you\" e-mail body must contain at least 3 characters";
-		if (intval($this->top_donors) != $this->top_donors || intval($this->top_donors) < 1 || intval($this->top_donors) > 10) $errors[] = "Download link lifetime must be valid integer value in range [1...10]";
+		if (intval($this->top_donors) != $this->top_donors || intval($this->top_donors) < 1 || intval($this->top_donors) > 10) $errors[] = "Number of top donors must be valid integer value in range [1...10]";
 		if (intval($this->slide_delay) != $this->slide_delay || intval($this->slide_delay) < 2 || intval($this->slide_delay) > 60) $errors[] = "Slideshow delay must be valid integer value in range [2...60]";
 		if (empty($errors)) return true;
 		return $errors;
@@ -195,10 +227,29 @@ class donationcontest_class
 			<div id="icon-options-general" class="icon32"><br /></div><h2>Donation Contest Widget</h2><br /> 
 			'.$message.'
 			<form enctype="multipart/form-data" method="post" style="margin: 0px" action="'.get_bloginfo('wpurl').'/wp-admin/admin.php">
+			<div class="postbox-container" style="width: 100%;">
+				<div class="metabox-holder">
+					<div class="meta-box-sortables ui-sortable">
+						<div class="postbox">
+							<!--<div class="handlediv" title="Click to toggle"><br></div>-->
+							<h3 class="hndle" style="cursor: default;"><span>General Settings</span></h3>
+							<div class="inside">
 			<table class="donationcontest_useroptions">
 				<tr>
 					<th>PayPal ID:</th>
 					<td><input type="text" id="donationcontest_paypal_id" name="donationcontest_paypal_id" value="'.htmlspecialchars($this->paypal_id, ENT_QUOTES).'" style="width: 95%;"><br /><em>Please enter valid PayPal e-mail, all donations are sent to this account.</em></td>
+				</tr>
+				<tr>
+					<th>Currency:</th>
+					<td>
+						<select id="donationcontest_currency" name="donationcontest_currency" >');
+		for ($i=0; $i<sizeof($this->currency_list); $i++)
+		{
+			print (
+							'<option value="'.$this->currency_list[$i].'"'.($this->currency_list[$i] == $this->currency ? ' selected="selected"' : '').'>'.$this->currency_list[$i].'</option>');
+		}
+		print ('
+						</select><br /><em>Please choose your currency.</em></td>
 				</tr>
 				<tr>
 					<th>E-mail for notifications:</th>
@@ -222,7 +273,7 @@ class donationcontest_class
 				</tr>
 				<tr>
 					<th>"Top donors" number:</th>
-					<td><input type="text" id="donationcontest_top_donors" name="donationcontest_top_donors" value="'.htmlspecialchars($this->top_donors, ENT_QUOTES).'" style="width: 60px; text-align: right;"> days<br /><em>Please enter number of top donors to be displayed in widget box.</em></td>
+					<td><input type="text" id="donationcontest_top_donors" name="donationcontest_top_donors" value="'.htmlspecialchars($this->top_donors, ENT_QUOTES).'" style="width: 60px; text-align: right;"><br /><em>Please enter number of top donors to be displayed in widget box.</em></td>
 				</tr>
 				<tr>
 					<th>"Donate" button:</th>
@@ -230,7 +281,7 @@ class donationcontest_class
 						<table style="border: 0px; padding: 0px;">
 						<tr><td style="padding-top: 8px; width: 20px;"><input type="radio" name="donationcontest_donate_type" value="html"'.($this->donate_type == "html" ? ' checked="checked"' : '').'></td><td>Standard HTML-button<br /><button onclick="return false;">Donate</button></td></tr>
 						<tr><td style="padding-top: 8px;"><input type="radio" name="donationcontest_donate_type" value="paypal"'.($this->donate_type == "paypal" ? ' checked="checked"' : '').'></td><td>Standard PayPal button<br /><img src="'.get_bloginfo("wpurl").'/wp-content/plugins/donation-contest-widget/images/btn_donate_LG.gif" border="0"></td></tr>
-						<tr><td style="padding-top: 8px;"><input type="radio" name="donationcontest_donate_type" value="custom"'.($this->donate_type == "custom" ? ' checked="checked"' : '').'></td><td>Custom "Donate" button'.(!empty($this->donate_image) ? '<br /><img src="'.get_bloginfo("wpurl").'/wp-content/plugins/donation-contest-widget/uploads/'.rawurlencode($this->donate_image).'" border="0">' : '').'<br /><input type="file" id="donationcontest_donate_image" name="donationcontest_donate_image" style="width: 95%;"><br /><em>Max dimensions: 200px x 200px, allowed images: JPG, GIF, PNG.</em></td></tr>
+						<tr><td style="padding-top: 8px;"><input type="radio" name="donationcontest_donate_type" value="custom"'.($this->donate_type == "custom" ? ' checked="checked"' : '').'></td><td>Custom "Donate" button'.(!empty($this->donate_image) ? '<br /><img src="'.get_bloginfo("wpurl").'/wp-content/uploads/donation-contest-widget/'.rawurlencode($this->donate_image).'" border="0">' : '').'<br /><input type="file" id="donationcontest_donate_image" name="donationcontest_donate_image" style="width: 95%;"><br /><em>Max dimensions: 200px x 200px, allowed images: JPG, GIF, PNG.</em></td></tr>
 						</table>
 					</td>
 				</tr>
@@ -246,10 +297,18 @@ class donationcontest_class
 					<td colspan="2" style="padding-top: 20px;">
 					<input type="hidden" name="ak_action" value="donationcontest_update_settings" />
 					<input type="hidden" name="donationcontest_exists" value="1" />
-					<input type="submit" id="submit" name="submit" value="Submit">
 					</td>
 				</tr>
 			</table>
+								<div class="alignright">
+									<input type="submit" class="button-primary" name="submit" value="Update Settings »">
+								</div>
+								<br class="clear">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
 			</form>
 		</div>
 		');
@@ -274,7 +333,7 @@ class donationcontest_class
 							else
 							{
 								$donate_image = "button_".md5(microtime().$_FILES["donationcontest_donate_image"]["tmp_name"]).$ext;
-								if (!move_uploaded_file($_FILES["donationcontest_donate_image"]["tmp_name"], dirname(__FILE__)."/uploads/".$donate_image))
+								if (!move_uploaded_file($_FILES["donationcontest_donate_image"]["tmp_name"], ABSPATH."wp-content/uploads/donation-contest-widget/".$donate_image))
 								{
 									$errors[] = "Can't save uploaded image";
 									$donate_image = "";
@@ -283,8 +342,8 @@ class donationcontest_class
 								{
 									if (!empty($this->donate_image))
 									{
-										if (file_exists(dirname(__FILE__)."/uploads/".$this->donate_image) && is_file(dirname(__FILE__)."/uploads/".$this->donate_image))
-											unlink(dirname(__FILE__)."/uploads/".$this->donate_image);
+										if (file_exists(ABSPATH."wp-content/uploads/donation-contest-widget/".$this->donate_image) && is_file(ABSPATH."wp-content/uploads/donation-contest-widget/".$this->donate_image))
+											unlink(ABSPATH."wp-content/uploads/donation-contest-widget/".$this->donate_image);
 									}
 								}
 							}
@@ -328,7 +387,7 @@ class donationcontest_class
 	{
 		global $wpdb;
 		echo '
-		<link rel="stylesheet" type="text/css" href="'.get_bloginfo("wpurl").'/wp-content/plugins/donation-contest-widget/css/style.css" media="screen" />
+		<link rel="stylesheet" type="text/css" href="'.get_bloginfo("wpurl").'/wp-content/plugins/donation-contest-widget/css/style.css?ver=1.29" media="screen" />
 		';
 	}
 
@@ -374,7 +433,7 @@ class donationcontest_class
 		global $wpdb;
 		if ($_days == 0) $time = 0;
 		else $time = time() - $_days*3600*24;
-		$sql = "SELECT * FROM ".$wpdb->prefix."dc_transactions WHERE created >= '".$time."' AND gross > 0 AND payment_status = 'Completed' ORDER BY gross DESC, created ASC LIMIT 0, ".$this->top_donors;
+		$sql = "SELECT * FROM ".$wpdb->prefix."dc_transactions WHERE created >= '".$time."' AND gross > 0 AND payment_status = 'Completed' AND currency = '".$this->currency."' ORDER BY gross DESC, created ASC LIMIT 0, ".$this->top_donors;
 		$rows = $wpdb->get_results($sql, ARRAY_A);
 		return $rows;
 	}
@@ -401,13 +460,13 @@ class donationcontest_widget extends WP_Widget {
 		';
 		for ($i=0; $i<$donationcontest->top_donors; $i++)
 		{
-			if ($donors[$i]['payer_name'] == "") $donors[$i]['payer_name'] = "- - - - - - - - - - - - -";
+			if ($donors[$i]['payer_name'] == "") $donors[$i]['payer_name'] = "- - - - - - - - -";
 			else $donors[$i]['payer_name'] = htmlspecialchars(wordwrap($donors[$i]['payer_name'], 24, " ", 1), ENT_QUOTES);
 			if (!is_numeric($donors[$i]['gross'])) $donors[$i]['gross'] = "0.00";
 			$content .= "
 			<tr>
 			<td style='text-align: left; border: 0px solid transparent;'>".$donors[$i]['payer_name']."</td>
-			<td style='text-align: right; border: 0px solid transparent;'>$".number_format($donors[$i]['gross'], 2)."</td>
+			<td style='text-align: right; border: 0px solid transparent;'>".number_format($donors[$i]['gross'], 2)." ".$donationcontest->currency."</td>
 			</tr>
 			";
 		}
@@ -429,7 +488,7 @@ class donationcontest_widget extends WP_Widget {
 			$content .= "
 			<tr>
 			<td style='text-align: left; border: 0px solid transparent;'>".$donors[$i]['payer_name']."</td>
-			<td style='text-align: right; border: 0px solid transparent;'>$".number_format($donors[$i]['gross'], 2)."</td>
+			<td style='text-align: right; border: 0px solid transparent;'>".number_format($donors[$i]['gross'], 2)." ".$donationcontest->currency."</td>
 			</tr>
 			";
 		}
@@ -451,7 +510,7 @@ class donationcontest_widget extends WP_Widget {
 			$content .= "
 			<tr>
 			<td style='text-align: left; border: 0px solid transparent;'>".$donors[$i]['payer_name']."</td>
-			<td style='text-align: right; border: 0px solid transparent;'>$".number_format($donors[$i]['gross'], 2)."</td>
+			<td style='text-align: right; border: 0px solid transparent;'>".number_format($donors[$i]['gross'], 2)." ".$donationcontest->currency."</td>
 			</tr>
 			";
 		}
@@ -462,7 +521,7 @@ class donationcontest_widget extends WP_Widget {
 		$content .= '
 		<form name="_xclick" method="post" style="margin: 0px; padding: 0px;" action="https://www.paypal.com/cgi-bin/webscr">
 			<input type="hidden" name="amount" id="amount" value="">
-			<input type="hidden" name="currency_code" value="USD">
+			<input type="hidden" name="currency_code" value="'.$donationcontest->currency.'">
 			<input type="hidden" name="cmd" value="_donations">
 			<input type="hidden" name="rm" value="2">
 			<input type="hidden" name="business" value="'.$donationcontest->paypal_id.'">
@@ -474,7 +533,7 @@ class donationcontest_widget extends WP_Widget {
 			<input type="hidden" name="no_note" value="1">
 			<input type="hidden" name="no_shipping" value="1">
 			';
-		if ($donationcontest->donate_type == "custom") $content .= '<input class="dontaioncontest_button" type="image" src="'.get_bloginfo("wpurl").'/wp-content/plugins/donation-contest-widget/uploads/'.rawurlencode($donationcontest->donate_image).'" border="0" name="submit" alt="">';
+		if ($donationcontest->donate_type == "custom") $content .= '<input class="dontaioncontest_button" type="image" src="'.get_bloginfo("wpurl").'/wp-content/uploads/donation-contest-widget/'.rawurlencode($donationcontest->donate_image).'" border="0" name="submit" alt="">';
 		else if ($donationcontest->donate_type == "paypal") $content .= '<input class="dontaioncontest_button" type="image" src="'.get_bloginfo("wpurl").'/wp-content/plugins/donation-contest-widget/images/btn_donate_LG.gif" border="0" name="submit" alt="">';
 		else $content .= '<input class="dontaioncontest_button" type="submit" value="Donate">';
 		$content .= '
