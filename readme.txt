@@ -8,7 +8,7 @@ Donate link: http://www.icprojects.net/donation-contest-widget.html
 Tags: donation, paypal
 Requires at least: 3.0
 Tested up to: 3.2.1
-Stable tag: 1.29
+Stable tag: 1.30
 
 Donation Contest Widget is a plugin which allows you to add donation contest box to any widgetized area of your website.
 
@@ -49,17 +49,23 @@ None.
 
 == Changelog ==
 
+= 1.30 =
+* Fixed the problem with PayPal IPN handler for non-USD donations.
+
 = 1.29 =
 * Currency list added. Now you can use the following currencies: USD, AUD, BRL, CAD, CHF, CZK, DKK, EUR, GBP, HKD, HUF, ILS, JPY, MXN, MYR, NOK, NZD, PHP, PLN, SEK, SGD, THB, TRY, TWD. 
 * Minor bugs fixed.
 
 = 1.28 =
-This is the first version of Paid Downloads plugin.
+This is the first version of Donation Contest Widget.
 
 == Upgrade Notice ==
+
+= 1.30 =
+Deactivate plugin. Upload new plugin files. Activate plugin.
 
 = 1.29 =
 Deactivate plugin. Upload new plugin files. Activate plugin.
  
 = 1.28 =
-This is the first version of Paid Downloads plugin.
+This is the first version of Donation Contest Widget.

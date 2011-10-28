@@ -34,7 +34,7 @@ if ($handle)
 		if ($transaction_type == "web_accept" && $payment_status == "Completed")
 		{
 			if (strtolower($seller_paypal) != strtolower($donationcontest->paypal_id)) $payment_status = "Unrecognized";
-			if ($mc_currency != "USD") $payment_status = "Unrecognized";
+			if ($mc_currency != $donationcontest->currency) $payment_status = "Unrecognized";
 		}
 		$sql = "INSERT INTO ".$wpdb->prefix."dc_transactions (
 			payer_name, payer_email, gross, currency, payment_status, transaction_type, details, created) VALUES (
