@@ -3,7 +3,7 @@
 Plugin Name: Donation Contest Widget
 Plugin URI: http://www.icprojects.net/donation-contest-widget.html
 Description: This plugin allows you to insert Donation Contest Widget into any widgetized area of your website.
-Version: 1.29
+Version: 1.30
 Author: Ivan Churakov
 Author URI: http://www.freelancer.com/affiliates/ichurakov/
 */
